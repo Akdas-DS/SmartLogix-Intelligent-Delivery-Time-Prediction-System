@@ -229,4 +229,4 @@ if submitted:
     init_db(conn)
     row = (datetime.now().isoformat(), order_id, distance_km, order_hour, order_dayofweek,
            agent_age, agent_rating, weather, traffic, vehicle, area, category, float(predicted))
-    store_prediction(conn, row
+    store_prediction(conn, row)
