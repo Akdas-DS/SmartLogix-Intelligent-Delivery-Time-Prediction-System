@@ -9,6 +9,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import sqlite3
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
 st.set_page_config(page_title="Amazon Delivery Time Predictor", layout="centered")
 st.title("Amazon Delivery Time Predictor 🚚")
@@ -66,7 +67,8 @@ def store_prediction(conn, row):
 # --------------------------
 # Load and preprocess dataset
 # --------------------------
-DATA_PATH = "C:/Users/makda/OneDrive/Desktop/Project_8(Amazon)/amazon_delivery_1.csv"
+BASE_DIR = os.path.dirname(__file__)
+DATA_PATH = os.path.join(BASE_DIR, "amazon_delivery_1.csv")  # CSV must be in same folder as app.py
 df = pd.read_csv(DATA_PATH)
 
 if 'Order_ID' in df.columns:
@@ -125,7 +127,7 @@ metrics = eval_reg(y_test, y_pred)
 st.write(metrics)
 
 # --------------------------
-# Visualizations
+# Visualizations (all original)
 # --------------------------
 st.subheader("Visualizations 📊")
 
