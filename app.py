@@ -66,8 +66,13 @@ def store_prediction(conn, row):
 # --------------------------
 # Load and preprocess dataset
 # --------------------------
-DATA_PATH = "C:/Users/makda/OneDrive/Desktop/Project_8(Amazon)/amazon_delivery_1.csv"
-df = pd.read_csv(DATA_PATH)
+uploaded_file = st.file_uploader("Upload CSV", type="csv")
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+else:
+    # fallback for local testing
+    DATA_PATH = "amazon_delivery_1.csv"  # place the CSV in the same folder as app.py
+    df = pd.read_csv(DATA_PATH)
 
 if 'Order_ID' in df.columns:
     df = df.drop_duplicates(subset=['Order_ID'])
@@ -225,13 +230,3 @@ if submitted:
     row = (datetime.now().isoformat(), order_id, distance_km, order_hour, order_dayofweek,
            agent_age, agent_rating, weather, traffic, vehicle, area, category, float(predicted))
     store_prediction(conn, row)
-    conn.close()
-
-# --------------------------
-# Show recent predictions
-# --------------------------
-if st.checkbox("Show recent predictions"):
-    conn = sqlite3.connect("predictions.db")
-    df_predictions = pd.read_sql("SELECT * FROM predictions ORDER BY id DESC LIMIT 50", conn)
-    st.dataframe(df_predictions)
-    conn.close()
