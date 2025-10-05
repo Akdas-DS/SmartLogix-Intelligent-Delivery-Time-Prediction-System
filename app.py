@@ -9,7 +9,6 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import sqlite3
 import seaborn as sns
 import matplotlib.pyplot as plt
-import os
 
 st.set_page_config(page_title="Amazon Delivery Time Predictor", layout="centered")
 st.title("Amazon Delivery Time Predictor 🚚")
@@ -67,9 +66,13 @@ def store_prediction(conn, row):
 # --------------------------
 # Load and preprocess dataset
 # --------------------------
-BASE_DIR = os.path.dirname(__file__)
-DATA_PATH = os.path.join(BASE_DIR, "amazon_delivery_1.csv")  # CSV must be in same folder as app.py
-df = pd.read_csv(DATA_PATH)
+uploaded_file = st.file_uploader("Upload CSV", type="csv")
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+else:
+    # fallback for local testing
+    DATA_PATH = "amazon_delivery_1.csv"  # place the CSV in the same folder as app.py
+    df = pd.read_csv(DATA_PATH)
 
 if 'Order_ID' in df.columns:
     df = df.drop_duplicates(subset=['Order_ID'])
@@ -127,7 +130,7 @@ metrics = eval_reg(y_test, y_pred)
 st.write(metrics)
 
 # --------------------------
-# Visualizations (all original)
+# Visualizations
 # --------------------------
 st.subheader("Visualizations 📊")
 
@@ -226,14 +229,4 @@ if submitted:
     init_db(conn)
     row = (datetime.now().isoformat(), order_id, distance_km, order_hour, order_dayofweek,
            agent_age, agent_rating, weather, traffic, vehicle, area, category, float(predicted))
-    store_prediction(conn, row)
-    conn.close()
-
-# --------------------------
-# Show recent predictions
-# --------------------------
-if st.checkbox("Show recent predictions"):
-    conn = sqlite3.connect("predictions.db")
-    df_predictions = pd.read_sql("SELECT * FROM predictions ORDER BY id DESC LIMIT 50", conn)
-    st.dataframe(df_predictions)
-    conn.close()
+    store_prediction(conn, row
